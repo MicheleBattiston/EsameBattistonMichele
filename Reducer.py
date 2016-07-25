@@ -1,24 +1,27 @@
-#!/usr/bin/php
-<?php
-//reducer script for sample hadoop job
+#!/usr/bin/python3.4
+import fileinput
 
-$word2count = array();
+nation = -1 #init var with the first iteration value
+sumTotal = 0
 
-// input comes from STDIN
-while (($line = fgets(STDIN)) !== false) {
-    // remove leading and trailing whitespace
-    $line = trim($line);
-    // parse the input we got from mapper.php
-    list($word, $count) = explode("\t", $line);
-    // convert count (currently a string) to int
-    $count = intval($count);
-    // sum counts
-    if ($count > 0) $word2count[$word] += $count;
-}
 
-ksort($word2count);  // sort the words alphabetically
+for line in fileinput.input():
 
-// write the results to STDOUT (standard output)
-foreach ($word2count as $word => $count) {
-    echo "$word\t$count\n";
-}
+	data = line.replace("\n","").split('\t')
+	newNation = data[0]
+	total = int(data[1])
+
+	#set value in the first iteration
+	if (nation == -1):
+		nation = newNation
+	#increment value if the key is the same
+	if (newNation == nation):
+		sumTotal += total
+	#if the key is different print previos values and restart with the key
+	else:
+		print(('{0}\t{1}'.format(nation, sumTotal)))
+		nation = newNation
+		sumTotal = total
+
+#print last value
+print(('{0}\t{1}'.format(newNation, sumTotal)))
